@@ -3,6 +3,9 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEditor;
 
+/// <summary>
+// Options - Klasa zażądzająca opcjami gry
+/// </summary>
 public class Options : MonoBehaviour {
 
 	// opcje dźwięku
