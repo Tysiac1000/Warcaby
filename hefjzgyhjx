@@ -1,0 +1,353 @@
+[1mdiff --git a/Assets/Skrypty/Menu.cs b/Assets/Skrypty/Menu.cs[m
+[1mindex 12cf469..c70f970 100644[m
+[1m--- a/Assets/Skrypty/Menu.cs[m
+[1m+++ b/Assets/Skrypty/Menu.cs[m
+[36m@@ -1,29 +1,34 @@[m
+ ﻿using UnityEngine;[m
+ using System.Collections;[m
+[32m+[m[32musing UnityEngine.UI;[m
+[32m+[m[32musing System.Linq;[m
+ [m
+ /// <summary>[m
+ /// Klasa Menu Gównego[m
+ /// </summary>[m
+[31m-[m
+[31m-public class Menu : MonoBehaviour [m
+[32m+[m[32mpublic class Menu : MonoBehaviour {[m
+ [m
+ 	/// <param name="panelInfo"></param>[m
+ 	/// <param name="mainCanva"></param>[m
+[31m-[m
+ 	private GameObject panelInfo;[m
+ 	public GameObject mainCanva;[m
+[31m-[m
+[32m+[m	[32mpublic GameObject options;[m
+[32m+[m	[32mpublic InputField inputGameName;[m
+[32m+[m	[32mpublic ToggleGroup toggleColorGroup;[m
+[32m+[m[41m	[m
+ 	/// <summary>[m
+[31m-	/// Uzyskujemy uchwyt do panel info[m
+[32m+[m	[32m/// Use this for initialization[m
+[32m+[m	[32m///  Uzyskujemy uchwyt do panel info[m
+ 	/// </summary>[m
+[31m-	void Start () {	[m
+[32m+[m	[32mvoid Start () {[m
+[32m+[m		[32m// szukamy obiektu gry[m[41m [m
+ 		panelInfo = GameObject.Find("panelInfo");[m
+ 	}[m
+ [m
+ 	/// <summary>[m
+ 	/// Nasłuchiwanie na wciśnięcie klawisza ESC[m
+[32m+[m	[32m/// Update is called once per frame[m
+ 	/// </summary>[m
+[31m-	// Update is called once per frame[m
+ 	void Update () {[m
+ [m
+ 		// Zamknięcie aplikacji w przypadku wciśniecia przycisku powrotu[m
+[36m@@ -34,35 +39,96 @@[m [mpublic class Menu : MonoBehaviour[m
+ 		}[m
+ 	}[m
+ [m
+[32m+[m	[32m/// <summary>[m
+[32m+[m	[32m/// Sprawdzenie platformy i zamknięcie aplikacji[m
+[32m+[m	[32m/// </summary>[m
+[32m+[m	[32mpublic void ExitApplication(){[m
+[32m+[m		[32m// Sprawdzamy platformę i zamykamy program[m
+[32m+[m		[32mif(Application.platform == RuntimePlatform.Android){[m
+[32m+[m			[32mApplication.Quit();[m
+[32m+[m		[32m}[m
+[32m+[m	[32m}[m
+ [m
+[32m+[m	[32m#region DO NOWYCH POZIOMÓW[m
+[32m+[m	[32m/// <summary>[m
+[32m+[m	[32m///Przejście do nowej sceny - utworzenie rozgrywki na jednym urządzeniu[m
+[32m+[m	[32m/// </summary>[m
+[32m+[m	[32mpublic void CreateGameOnOneDevice(){[m
+[32m+[m		[32m// ustawiamy tryb gry[m
+[32m+[m		[32mGameObject.Find ("Options").GetComponent<Options> ().gMode = GameMode.ONE_DEVICE;[m
+[32m+[m		[32m// ładujemy nowy poziom[m
+[32m+[m		[32mApplication.LoadLevel("Gameplay");[m
+[32m+[m	[32m}[m
+ [m
+[31m-	// FUNKCJE WŁASNE ----------------------------------------------------[m
+ 	/// <summary>[m
+ 	///Przejście do nowej sceny - utworzenie rozgrywki[m
+ 	/// </summary>[m
+ 	public void CreateGame(){[m
+[31m-		Application.LoadLevel("rozgrywka");[m
+[32m+[m		[32moptions.SendMessage ("setGameplayName", inputGameName.text);[m
+[32m+[m		[32m//Debug.Log(netConf.getGameplayName().ToString());[m
+[32m+[m
+[32m+[m		[32mstring activeToggle = toggleColorGroup.ActiveToggles ().First ().ToString ();[m
+[32m+[m		[32mswitch (activeToggle) {[m
+[32m+[m			[32mcase "toggleWhite (UnityEngine.UI.Toggle)" : options.SendMessage ("setPawnColor", PawnsColors.WHITE);[m
+[32m+[m				[32m//Debug.Log("WHITE");[m
+[32m+[m				[32mbreak;[m
+[32m+[m			[32mcase "toggleBlack (UnityEngine.UI.Toggle)" : options.SendMessage ("setPawnColor", PawnsColors.BLACK);[m
+[32m+[m			[32m//Debug.Log("BLACK");[m
+[32m+[m				[32mbreak;[m
+[32m+[m		[32m}[m
+[32m+[m
+[32m+[m		[32m// ustawiamy tryb gry[m
+[32m+[m		[32mGameObject.Find ("Options").GetComponent<Options> ().gMode = GameMode.HOST;[m
+[32m+[m
+[32m+[m		[32mApplication.LoadLevel("Gameplay");[m
+ 	}[m
+[32m+[m
+ 	/// <summary>[m
+ 	///Przejście do nowej sceny - dołączenie do rozgrywkui[m
+ 	/// </summary>[m
+ 	public void JoinGame(){[m
+[31m-		Application.LoadLevel("rozgrywka");[m
+[32m+[m		[32m// ustawiamy tryb gry[m
+[32m+[m		[32mGameObject.Find ("Options").GetComponent<Options> ().gMode = GameMode.CLIENT;[m
+[32m+[m
+[32m+[m		[32mApplication.LoadLevel("Gameplay");[m
+ 	}[m
+[32m+[m
+ 	/// <summary>[m
+ 	///Przejście do nowej sceny - samouczka[m
+ 	/// </summary>[m
+ 	public void StartTutorial(){[m
+[32m+[m		[32mApplication.LoadLevel("Tutorial");[m
+[32m+[m	[32m}[m
+[32m+[m	[32m#endregion[m
+ [m
+[32m+[m	[32m#region PANEL MENU[m
+[32m+[m	[32mpublic void changeMusicVolume() {[m
+[32m+[m		[32mSlider musicSlider = GameObject.Find("sliderMusic").GetComponent<Slider>();[m
+[32m+[m		[32moptions.SendMessage ("setMusicVolume", musicSlider.value);[m
+[32m+[m	[32m}[m
+[32m+[m	[32mpublic void changeSoundsVolume() {[m
+[32m+[m		[32mSlider soundsSlider = GameObject.Find("sliderSounds").GetComponent<Slider>();[m
+[32m+[m		[32moptions.SendMessage ("setSoundVolume", soundsSlider.value);[m
+ 	}[m
+[32m+[m	[32mpublic void changeGraphicQuality() {[m
+[32m+[m		[32mSlider graphicSlider = GameObject.Find("sliderGraphics").GetComponent<Slider>();[m
+[32m+[m		[32moptions.SendMessage ("setGraphicsQuality", graphicSlider.value);[m
+[32m+[m	[32m}[m
+[32m+[m	[32mpublic void changeShadows() {[m
+[32m+[m		[32mToggle graphicSlider = GameObject.Find("toggleShadows").GetComponent<Toggle>();[m
+[32m+[m		[32moptions.SendMessage ("setShadows", graphicSlider.isOn);[m
+[32m+[m	[32m}[m
+[32m+[m	[32m#endregion[m
+ [m
+ 	#region PANEL INFO[m
+ 	/// <summary>[m
+ 	/// Pokazujemy panel z informacjami[m
+ 	/// </summary>[m
+ 	public void Info(){[m
+[32m+[m		[32m// pokazujemy panel z informacjami[m
+ 		panelInfo.SetActive (true);[m
+ 	}[m
+[32m+[m
+ 	/// <summary>[m
+ 	/// Ukrywamy panel z informacjami[m
+ 	/// </summary>[m
+[36m@@ -70,14 +136,5 @@[m [mpublic class Menu : MonoBehaviour[m
+ 		panelInfo.SetActive (false);[m
+ 	}[m
+ 	#endregion[m
+[31m-[m
+[31m-/// <summary>[m
+[31m-/// Sprawdzenie platformy i zamknięcie aplikacji[m
+[31m-/// </summary>[m
+[31m-	public void ExitApplication(){[m
+[31m-		if(Application.platform == RuntimePlatform.Android){[m
+[31m-			Application.Quit();[m
+[31m-		}[m
+[31m-	}[m
+[31m-[m
+[32m+[m[41m	[m
+ }[m
+[1mdiff --git a/Assets/Skrypty/Options.cs b/Assets/Skrypty/Options.cs[m
+[1mindex 23f69da..da603be 100644[m
+[1m--- a/Assets/Skrypty/Options.cs[m
+[1m+++ b/Assets/Skrypty/Options.cs[m
+[36m@@ -1,69 +1,117 @@[m
+[31m-﻿using UnityEngine;[m
+[31m-using System.Collections;[m
+[31m-using UnityEngine.UI;[m
+[31m-using UnityEditor;[m
+[31m-[m
+[31m-/// <summary>[m
+[31m-// Options - Klasa zażądzająca opcjami gry[m
+[31m-/// </summary>[m
+[31m-public class Options : MonoBehaviour {[m
+[31m-[m
+[31m-	// opcje dźwięku[m
+[31m-	public float musicVolume;[m
+[31m-	public float soundsVolume;[m
+[31m-	public GameObject Music;[m
+[31m-	public GameObject Sounds;[m
+[31m-	// opcje grafiki[m
+[31m-	public bool shadows;[m
+[31m-	public int graphicsQuality;[m
+[31m-	public int boardStyle;[m
+[31m-	public int pawnStyle;[m
+[31m-[m
+[31m-	// Use this for initialization[m
+[31m-	void Start () {[m
+[31m-		// inicjalizujemy ustawienia dźwięku[m
+[31m-		musicVolume = 1;[m
+[31m-		soundsVolume = 1;[m
+[31m-		// inicjalizujemy ustawienia grafiki[m
+[31m-		shadows = true;[m
+[31m-		graphicsQuality = 3;[m
+[31m-	}[m
+[31m-[m
+[31m-	/*[m
+[31m-	#region OPCJE DZWIEKU[m
+[31m-	public void ZmianyDzwiekuOK(){[m
+[31m-		if (GameObject.Find("ToggleMuzyka").GetComponent<Toggle>().isOn) {[m
+[31m-			Music.audio.volume = 1;[m
+[31m-			musicLoudness = true;[m
+[31m-		} else {[m
+[31m-			Music.audio.volume = 0;[m
+[31m-			musicLoudness = false;[m
+[31m-		}[m
+[31m-[m
+[31m-		if (GameObject.Find("ToggleEfektyDz").GetComponent<Toggle>().isOn) {[m
+[31m-			Sounds.audio.volume = 1;	[m
+[31m-			soundsVolume = true;[m
+[31m-		} else {[m
+[31m-			Sounds.audio.volume = 0;[m
+[31m-			soundsVolume = false;[m
+[31m-		}[m
+[31m-	}[m
+[31m-[m
+[31m-	public void ZmianyDzwiekuAnuluj(){[m
+[31m-		GameObject.Find("ToggleMuzyka").GetComponent<Toggle>().isOn = musicLoudness;	[m
+[31m-		GameObject.Find("ToggleEfektyDz").GetComponent<Toggle>().isOn = soundsVolume;	[m
+[31m-	}[m
+[31m-	#endregion[m
+[31m-[m
+[31m-	#region OPCJE GRAFIKI[m
+[31m-	public void ZmianyGrafikiOK(){[m
+[31m-		QualitySettings.SetQualityLevel ((int)GameObject.Find ("SliderTex").GetComponent<Slider> ().value, true);[m
+[31m-	}[m
+[31m-	public void ZmianyGrafikiAnuluj(){[m
+[31m-		GameObject.Find("ToggleCienie").GetComponent<Toggle>().isOn = shadows;[m
+[31m-		GameObject.Find ("SliderTex").GetComponent<Slider> ().value = graphicsQuality;[m
+[31m-		GameObject.Find ("SliderEffCz").GetComponent<Slider> ().value = efekty;[m
+[31m-	}[m
+[31m-	#endregion[m
+[31m-	*/[m
+[31m-}[m
+[32m+[m[32m﻿using UnityEngine;[m[41m[m
+[32m+[m[32musing System.Collections;[m[41m[m
+[32m+[m[32musing UnityEngine.UI;[m[41m[m
+[32m+[m[32m//using UnityEditor;[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m// typ wyliczeniowy określający kolor pionków[m[41m[m
+[32m+[m[32mpublic enum PawnsColors{[m[41m[m
+[32m+[m	[32mWHITE = 0,[m[41m[m
+[32m+[m	[32mBLACK[m[41m[m
+[32m+[m[32m}[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m// typ wyliczeniowy określający tryb gry: na jednym urządzeniu, host, klient[m[41m[m
+[32m+[m[32mpublic enum GameMode{[m[41m[m
+[32m+[m	[32mONE_DEVICE = 0,[m[41m[m
+[32m+[m	[32mHOST,[m[41m[m
+[32m+[m	[32mCLIENT[m[41m[m
+[32m+[m[32m}[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m/// <summary>[m[41m[m
+[32m+[m[32m// Options - Klasa zażądzająca opcjami gry[m[41m[m
+[32m+[m[32m/// </summary>[m[41m[m
+[32m+[m[32mpublic class Options : MonoBehaviour {[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32mpublic GameMode gMode;[m[41m[m
+[32m+[m	[32m// opcje dźwięku[m[41m[m
+[32m+[m	[32mpublic float musicVolume;[m[41m[m
+[32m+[m	[32mprivate float musicVolumeDefault;[m[41m[m
+[32m+[m	[32mpublic float soundsVolume;[m[41m[m
+[32m+[m	[32mprivate float soundsVolumeDefault;[m[41m[m
+[32m+[m	[32mpublic GameObject Music;[m[41m[m
+[32m+[m	[32mpublic GameObject Sounds;[m[41m[m
+[32m+[m	[32m// opcje grafiki[m[41m[m
+[32m+[m	[32mpublic bool shadows;[m[41m[m
+[32m+[m	[32mprivate bool shadowsDefault;[m[41m[m
+[32m+[m	[32mpublic int graphicsQuality;[m[41m[m
+[32m+[m	[32mprivate int graphicsQualityDefault;[m[41m[m
+[32m+[m	[32mpublic int boardStyle;[m[41m[m
+[32m+[m	[32mpublic int pawnStyle;[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32m// Use this for initialization[m[41m[m
+[32m+[m	[32mvoid Start () {[m[41m[m
+[32m+[m		[32m// inicjalizujemy ustawienia dźwięku[m[41m[m
+[32m+[m		[32mmusicVolumeDefault = musicVolume = 1;[m[41m[m
+[32m+[m		[32msoundsVolumeDefault = soundsVolume = 1;[m[41m[m
+[32m+[m		[32m// inicjalizujemy ustawienia grafiki[m[41m[m
+[32m+[m		[32mshadowsDefault = shadows = true;[m[41m[m
+[32m+[m		[32mgraphicsQualityDefault = graphicsQuality = 3;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32mvoid Awake() {[m[41m[m
+[32m+[m		[32mDontDestroyOnLoad(transform.gameObject);[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32mpublic void backToDefaultSettings() {[m[41m[m
+[32m+[m		[32mmusicVolume = musicVolumeDefault;[m[41m[m
+[32m+[m		[32mGameObject.Find("sliderMusic").GetComponent<Slider>().value = musicVolumeDefault;[m[41m[m
+[32m+[m		[32msoundsVolume = soundsVolumeDefault;[m[41m[m
+[32m+[m		[32mGameObject.Find("sliderSounds").GetComponent<Slider>().value = soundsVolumeDefault;[m[41m[m
+[32m+[m		[32mshadows = shadowsDefault;[m[41m[m
+[32m+[m		[32mGameObject.Find("toggleShadows").GetComponent<Toggle>().isOn = shadowsDefault;[m[41m[m
+[32m+[m		[32mgraphicsQuality = graphicsQualityDefault;[m[41m[m
+[32m+[m		[32mGameObject.Find("sliderGraphics").GetComponent<Slider>().value = graphicsQualityDefault;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32m#region OPCJE SIECIOWE[m[41m[m
+[32m+[m	[32mpublic string gameplayName;[m[41m[m
+[32m+[m	[32mpublic PawnsColors pawnColor;[m[41m[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic const int gamePort = 25000;[m[41m[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic void setGameplayName(string name) {[m[41m[m
+[32m+[m		[32mthis.gameplayName = name;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic string getGameplayName() {[m[41m[m
+[32m+[m		[32mreturn this.gameplayName;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m[41m	[m
+[32m+[m	[32mpublic void setPawnColor(PawnsColors color) {[m[41m[m
+[32m+[m		[32mthis.pawnColor = color;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic PawnsColors getPawnColor() {[m[41m[m
+[32m+[m		[32mreturn this.pawnColor;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32m#endregion[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32m#region OPCJE DŹWIEKU[m[41m[m
+[32m+[m	[32mpublic void setMusicVolume(float musicVol) {[m[41m[m
+[32m+[m		[32mmusicVolume = musicVol;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic float getMusicVolume() {[m[41m[m
+[32m+[m		[32mreturn musicVolume;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic void setSoundVolume(float soundVol) {[m[41m[m
+[32m+[m		[32msoundsVolume = soundVol;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic float getSoundVolume() {[m[41m[m
+[32m+[m		[32mreturn soundsVolume;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32m#endregion[m[41m[m
+[32m+[m[41m[m
+[32m+[m	[32m#region OPCJE GRAFIKI[m[41m[m
+[32m+[m	[32mpublic void setGraphicsQuality(int gQ) {[m[41m[m
+[32m+[m		[32mgraphicsQuality = gQ;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic int getGraphicsQuality() {[m[41m[m
+[32m+[m		[32mreturn graphicsQuality;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic void setShadows(bool s) {[m[41m[m
+[32m+[m		[32mshadows = s;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32mpublic bool getShadows() {[m[41m[m
+[32m+[m		[32mreturn shadows;[m[41m[m
+[32m+[m	[32m}[m[41m[m
+[32m+[m	[32m#endregion[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m}[m[41m[m
