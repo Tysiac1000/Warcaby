@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 	/// <summary>
-	/// This is Pawn class 
+	/// Klasa Pionka
 	/// </summary>
 public class Pawn : MonoBehaviour {
 

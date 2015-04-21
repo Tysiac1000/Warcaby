@@ -3,13 +3,17 @@ using System.Collections;
 using UnityEngine.UI;
 //using UnityEditor;
 
+/// <summary>
 // typ wyliczeniowy określający kolor pionków
+/// </summary>
 public enum PawnsColors{
 	WHITE = 0,
 	BLACK
 }
 
+/// <summary>
 // typ wyliczeniowy określający tryb gry: na jednym urządzeniu, host, klient
+/// </summary>
 public enum GameMode{
 	ONE_DEVICE = 0,
 	HOST,
@@ -22,14 +26,18 @@ public enum GameMode{
 public class Options : MonoBehaviour {
 
 	public GameMode gMode;
+	/// <summary>
 	// opcje dźwięku
+	/// </summary>
 	public float musicVolume;
 	private float musicVolumeDefault;
 	public float soundsVolume;
 	private float soundsVolumeDefault;
 	public GameObject Music;
 	public GameObject Sounds;
+	/// <summary>
 	// opcje grafiki
+	/// </summary>
 	public bool shadows;
 	private bool shadowsDefault;
 	public int graphicsQuality;
@@ -39,11 +47,27 @@ public class Options : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		/// <summary>
 		// inicjalizujemy ustawienia dźwięku
+		/// </summary>
+		/// <param>
+		/// 1 ustawia domyślną głośność muzyki na 1
+		/// </param>
 		musicVolumeDefault = musicVolume = 1;
+		/// <param>
+		/// 1 ustawia domyślną głośność dzwięków gry na 1
+		/// </param>
 		soundsVolumeDefault = soundsVolume = 1;
+		/// <summary>
 		// inicjalizujemy ustawienia grafiki
+		/// </summary>
+		/// <param>
+		/// true ustawia domyślne włączenie cieni w grze
+		/// </param>
 		shadowsDefault = shadows = true;
+		/// <param>
+		/// true ustawia domyślne ustawienie jakości cieni na 3
+		/// </param>
 		graphicsQualityDefault = graphicsQuality = 3;
 	}
 

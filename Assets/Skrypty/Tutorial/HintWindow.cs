@@ -1,18 +1,18 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
-// Klasa odpowiedzialna za kursor podczas trybu gry
+/// Klasa HintWindow
 /// </summary>
-public class Cursor : Gameplay {
-
+public class HintWindow : MonoBehaviour {
+	
 	// Use this for initialization
 	void Start () {
-	
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
 }
