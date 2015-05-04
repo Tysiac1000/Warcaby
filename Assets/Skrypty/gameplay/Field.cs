@@ -1,49 +1,73 @@
 using UnityEngine;
 using System.Collections;
 
-// typ wyliczeniowy określający stan pola: puste, nie puste, dozwolony ruch
+// typ wyliczeniowy określający stan pola: puste, nie puste, dozolony ruch
 public enum FieldState{
 	EMPTY = 0,
 	NON_EMPTY,
-	MOVE_ALLOWED
+	MOVE_ALLOWED,
+	HIGHLIGHTED
 }
 
 public class Field : MonoBehaviour {
 
-	public string idField;
-	public FieldState fState;
-	public bool isSelected;
+	public string idField;		// identyfikator pola
+	public FieldState fState;	// stan pola
+	public int pawnId;			// identyfikator pionka który stoi na polu
+
+	// materiały dla pola niezaznaczonego i zaznaczonego
+	private Material darkFieldMaterial, highlightedDarkFieldMaterial;	
 
 	// Use this for initialization
 	void Start () {
-
+		darkFieldMaterial = Resources.Load("PoleCiemne", typeof(Material)) as Material;
+		highlightedDarkFieldMaterial = Resources.Load("selectedDarkField", typeof(Material)) as Material;
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+	void FixedUpdate () {
 		OnFieldClick ();
 	}
 
-	// reakcja na kliknięcie pola w grze
+	public void setHighlighted() {
+		this.gameObject.renderer.material = highlightedDarkFieldMaterial;
+		this.fState = FieldState.HIGHLIGHTED;
+	}
+
+	public void unsetHighlighted() {
+		this.gameObject.renderer.material = darkFieldMaterial;
+		this.fState = FieldState.EMPTY;
+	}
+
 	private void OnFieldClick() {
-		if (Input.GetMouseButtonDown (0)) {
+		// sprawdzamy czy tapnięto ekran
+		// warunek dla androida: Input.touchCount > 0
+		// warunek dla Windowsa: 
+		if (Input.GetMouseButton (0)) {
 			Ray toMouse = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit rFieldHit;
 			bool didHit = Physics.Raycast(toMouse, out rFieldHit, 500.0f);
+
+			// sprawdzamy czy trafiliśmy na obiekt z tagiem Field
 			if(didHit && rFieldHit.collider.gameObject.tag == "Field") {
 				Field HitedFieldScript = rFieldHit.collider.gameObject.GetComponent<Field>(); 
 
-				if(HitedFieldScript.fState == FieldState.MOVE_ALLOWED)
+				// jedynie obiekt podświetlony będzie reagować
+				if(HitedFieldScript.fState == FieldState.HIGHLIGHTED)
 				{	
-					//rhHit.collider.gameObject.renderer.material = selectedPawnMat;
-					
-					isSelected = false;
-					rFieldHit.collider.gameObject.GetComponent<Field>().isSelected = true;
+					// trzeba sprawdzić czy są bicia i/lub ruchy
+					Gameplay gS = Camera.main.GetComponent<Gameplay>();
+					Board bS = rFieldHit.transform.parent.transform.gameObject.GetComponent<Board>();
+					if(gS.isThereCapture) {
+						// mechanizm ruchu w momencie bicia
+					}
+					else if (gS.isThereMove) {
+						// jeśli nie ma bić, to wykonjemy prosty ruch na inne pole
+						Player playerS = GameObject.Find("Player"+gS.whoseTurnID).GetComponent<Player>();
+						playerS.makeMove(HitedFieldScript.idField);
+					}
+
 				}
-				
-			} else {
-				Debug.Log("Kliknęto w pustą przestrzeń");
-			}
+			} 
 		}
 	}
 }
