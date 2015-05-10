@@ -122,6 +122,7 @@ public class Gameplay : MonoBehaviour {
 		for (int a = 0; a < PlayerPawns.Count; a++) {
 			// pobieramy komponent skryptu dla aktualnie sprawdzanego pionka
 			Pawn CurrentPawnScript = PlayerPawns[a].GetComponent<Pawn>();
+			CurrentPawnScript.pState = PawnState.CANT_MOVE;
 
 			// sprawdzamy czy pionek nie został ubity
 			if (CurrentPawnScript.pState != PawnState.CAPTURED){
@@ -129,51 +130,59 @@ public class Gameplay : MonoBehaviour {
 				// trzeba pobrać id pola na którym jest pionek
 				string FieldId = CurrentPawnScript.fieldID;
 				// tworzymy listę która będzie przechowywać id-ki sąsiadujących pól
-				List<string> closestFields = BoardScript.getSurroundingFields(FieldId);
+				if (FieldId != "0") {
+					List<string> closestFields = BoardScript.getSurroundingFields(FieldId);
 
-				// w tej pętli sprawdzane będą wszystkie pola sąsiadujące, czy na którymś jest pionek wroga
-				for  (int b = 0; b < closestFields.Count; b++) {
+					// w tej pętli sprawdzane będą wszystkie pola sąsiadujące, czy na którymś jest pionek wroga
+					for  (int b = 0; b < closestFields.Count; b++) {
 
-					// pobieramy komponent skryptu dla aktualnie sprawdzanego pola
-					Field CurrentFieldScript = GameObject.Find (closestFields[b]).transform.GetComponent<Field>();
+						// pobieramy komponent skryptu dla aktualnie sprawdzanego pola
+						Field CurrentFieldScript = GameObject.Find (closestFields[b]).transform.GetComponent<Field>();
 
-					// jeśli pole jest nie puste
-					FieldState BorderFieldState = CurrentFieldScript.fState;
-					if (BorderFieldState == FieldState.NON_EMPTY){
-						int PawnIDonField = BoardScript.getPawnIDonField(closestFields[b]);
-						int PlayerIDonField = (int)PawnIDonField / 100;
+						// jeśli pole jest nie puste
+						FieldState BorderFieldState = CurrentFieldScript.fState;
+						if (BorderFieldState == FieldState.NON_EMPTY){
+							int PawnIDonField = BoardScript.getPawnIDonField(closestFields[b]);
+							int PlayerIDonField = (int)PawnIDonField / 100;
 
-						// jeśli pionek wroga
-						if (pID != PlayerIDonField) {
-							// sprawdzamy czy w lini prostej za tym polem jest wolne pole
-							string endFieldID = BoardScript.getFieldIDinLine(FieldId,closestFields[b]);
+							// jeśli pionek wroga
+							if (pID != PlayerIDonField) {
+								// sprawdzamy czy w lini prostej za tym polem jest wolne pole
+								string endFieldID = BoardScript.getFieldIDinLine(FieldId,closestFields[b]);
 
-							if (endFieldID != "brak_pola"){
-								// trzeba sprawdzić czy pole za jest wolne 
-								// dlatego pobieramy status pola końcowego
-								FieldState endFieldStatus = GameObject.Find (endFieldID).transform.GetComponent<Field>().fState;
-								// sprawdzamy czy pole końcowe jest puste
-								if (endFieldStatus != FieldState.NON_EMPTY){
+								if (endFieldID != "brak_pola"){
+									// trzeba sprawdzić czy pole za jest wolne 
+									// dlatego pobieramy status pola końcowego
+									FieldState endFieldStatus = GameObject.Find (endFieldID).transform.GetComponent<Field>().fState;
+									// sprawdzamy czy pole końcowe jest puste
+									if (endFieldStatus != FieldState.NON_EMPTY){
 
-									// jeśli pole za pionkiem wroga jest puste to mamy bicie
-									GameObject.Find (endFieldID).transform.GetComponent<Field>().fState = FieldState.MOVE_ALLOWED;
-									CurrentPawnScript.pState = PawnState.CAN_CAPTURE;
-									isThereCapture = true;
+										// jeśli pole za pionkiem wroga jest puste to mamy bicie
+										GameObject.Find (endFieldID).transform.GetComponent<Field>().fState = FieldState.MOVE_ALLOWED;
+										CurrentPawnScript.pState = PawnState.CAN_CAPTURE;
+										//Debug.Log("Ustawiono dla pionka: "+CurrentPawnScript.name+", stan: "+CurrentPawnScript.pState);
+										isThereCapture = true;
 
-									Debug.Log("Bicie na: " + endFieldID);
+										Debug.Log("Bicie na: " + endFieldID);
+									}
 								}
 							}
-						}
-					} 
-					// jeśli pole graniczne jest puste
-					else if (BorderFieldState == FieldState.EMPTY || BorderFieldState == FieldState.MOVE_ALLOWED){
-						// sprawdzamy czy pole graniczne jest z przodu
-						if(BoardScript.isItFront(FieldId, closestFields[b], pID)) {
-							// jeśli pole jest z przodu to ustawiamy MOVE_ALLOWED
-							CurrentFieldScript.fState = FieldState.MOVE_ALLOWED;
-							// a pionek moze wykonać ruch
-							CurrentPawnScript.pState = PawnState.CAN_MOVE;
-							isThereMove = true;
+						} 
+						// jeśli pole graniczne jest puste
+						else if (BorderFieldState == FieldState.EMPTY || BorderFieldState == FieldState.MOVE_ALLOWED){
+							// sprawdzamy czy pole graniczne jest z przodu
+							if(BoardScript.isItFront(FieldId, closestFields[b], pID)) {
+								// jeśli pole jest z przodu to ustawiamy MOVE_ALLOWED
+								CurrentFieldScript.fState = FieldState.MOVE_ALLOWED;
+								// a pionek moze wykonać ruch
+								// jeśli pionek ma bicie to nie może wykonać ruchu
+								if(CurrentPawnScript.pState != PawnState.CAN_CAPTURE) {
+									CurrentPawnScript.pState = PawnState.CAN_MOVE;
+									//Debug.Log("Ustawiono dla pionka: "+CurrentPawnScript.name+", stan: "+CurrentPawnScript.pState);
+								}	
+
+								isThereMove = true;
+							}
 						}
 					}
 				}
@@ -186,7 +195,13 @@ public class Gameplay : MonoBehaviour {
 			// jeśli nie ma możliwych ruchów lub bić to koniec gry i remis
 			showResults("Remis");
 		}
-		Debug.Log ("Zainicjalizowano pierwszą turę");
+		Debug.Log ("Zainicjalizowano turę dla gracza nr: " + whoseTurnID);
+	}
+
+	// zwraca gracza który posiada prawo ruchu
+	public GameObject getEnemyPlayer(){
+		if (whoseTurnID == 1) return GameObject.Find ("Player" + 2);
+		else return GameObject.Find ("Player" + 1);
 	}
 
 	// funkcja zmieniająca gracza
@@ -194,7 +209,7 @@ public class Gameplay : MonoBehaviour {
 		
 	}
 
-	private void showResults(string Winner){
+	public void showResults(string Winner){
 		if (Winner == "Remis") {
 			// wyświetlenie remisu		
 			panelGameEnd.SetActive (true);

@@ -13,7 +13,7 @@ public class Board : MonoBehaviour {
 	public GameObject Field_bright;
 	public GameObject Field_dark;
 
-	private GameObject[][] Fields;
+	public GameObject[][] Fields;
 	private int fc = 8;
 	// Use this for initialization
 	void Start () {
@@ -27,7 +27,7 @@ public class Board : MonoBehaviour {
 	}
 
 	// zwraca listę ciemnych pól
-	public List<GameObject> getDarkFieldsList() {
+	public List<GameObject> set() {
 		List<GameObject> fieldsList = new List<GameObject>();
 		for (int a = 0; a < 8; a++) {
 						for (int b = 0; b < 8; b++) {
@@ -135,6 +135,7 @@ public class Board : MonoBehaviour {
 
 	// funkcja zwraca id-ki pól sąsiadujących z polem o podanym id jako argument
 	public List<string> getSurroundingFields(string idField){
+		Debug.Log ("Sprawdzam pole: "+ idField);
 		byte[] asciiBytes = Encoding.ASCII.GetBytes (idField);
 		int yID = asciiBytes[0];
 		int xID = asciiBytes[1]-48;
@@ -228,8 +229,84 @@ public class Board : MonoBehaviour {
 		Debug.Log ("Wypełniono planszę polami");
 	}
 	
-	public bool moveCheck(){
-		bool allow = true;
-		return allow;
+	public bool searchForCaptures(Pawn cPawn){
+		Gameplay gp = Camera.main.GetComponent<Gameplay>();
+		Player eP = gp.getEnemyPlayer().GetComponent<Player>();
+		Player cP = GameObject.Find("Player"+gp.whoseTurnID).GetComponent<Player>();
+
+		bool isCapture = false;
+
+		// odczytujemy id pól znajdujących się w sąsiedztwie pionka, na których stoi wróg
+		List<string> SurrFieldsWithEnemies = getSurroundingFieldsWithEnemies(cPawn.fieldID, (int)(cPawn.pawnID/100) );
+		
+		bool isCaptureAnywhere = false;
+		// sprawdzamy czy pola za pionkiem wroga w lini prostej są wolne
+		foreach (string sfields in SurrFieldsWithEnemies){
+			// najpierw szukamy id pola za pionkiem wroga
+			string fieldIDinLine = getFieldIDinLine(cPawn.fieldID, sfields);
+			// trzeba uzyskać id pionka wroga do bicia
+			int pawn2capID = getPawnIDonField(sfields);
+			// id pionka trzeba przetłumaczyć na index
+			int pawn2CapIndex;
+			if (gp.whoseTurnID == 1) pawn2CapIndex = pawn2capID-201;
+			else pawn2CapIndex = pawn2capID-101;
+			Pawn enemyPawn2Cap = eP.Pawns[pawn2CapIndex].GetComponent<Pawn>();
+			
+			// trzeba się zabezpieczyć przed sytuacją kiedy nie ma możłiwości bicia pionków, 
+			// wtedy musi nastąpić zmiana tury
+			
+			if (fieldIDinLine != "brak_pola" && enemyPawn2Cap.pState != PawnState.CAPTURED) {
+				Field fieldScript = GameObject.Find(fieldIDinLine).GetComponent<Field>(); 
+				// sprawdzamy czy to pole jest puste 
+				if (fieldScript.fState == FieldState.EMPTY || fieldScript.fState == FieldState.MOVE_ALLOWED){
+
+					isCapture = true;
+					// jeśli tak to podświetlamy
+					fieldScript.setHighlighted();
+					// zapamiętujemy id pionka ktory wykonuje bicie
+					cP.pawnToMove = (cPawn.pawnID-(gp.whoseTurnID*100)-1);
+					
+					//Debug.Log("id bitego pionka: " + pawn2capID);
+					cP.pawnToCapture = pawn2capID;
+				}
+			}
+		}
+
+		return isCapture;
+	}
+
+	public bool areThereCaptures(Pawn cPawn){
+		Gameplay gp = Camera.main.GetComponent<Gameplay>();
+		Player eP = gp.getEnemyPlayer().GetComponent<Player>();
+		Player cP = GameObject.Find("Player"+gp.whoseTurnID).GetComponent<Player>();
+		
+		bool isCapture = false;
+		
+		// odczytujemy id pól znajdujących się w sąsiedztwie pionka, na których stoi wróg
+		List<string> SurrFieldsWithEnemies = getSurroundingFieldsWithEnemies(cPawn.fieldID, (int)(cPawn.pawnID/100) );
+		
+		bool isCaptureAnywhere = false;
+		// sprawdzamy czy pola za pionkiem wroga w lini prostej są wolne
+		foreach (string sfields in SurrFieldsWithEnemies){
+			// najpierw szukamy id pola za pionkiem wroga
+			string fieldIDinLine = getFieldIDinLine(cPawn.fieldID, sfields);
+			// trzeba uzyskać id pionka wroga do bicia
+			int pawn2capID = getPawnIDonField(sfields);
+			// id pionka trzeba przetłumaczyć na index
+			int pawn2CapIndex;
+			if (gp.whoseTurnID == 1) pawn2CapIndex = pawn2capID-201;
+			else pawn2CapIndex = pawn2capID-101;
+			Pawn enemyPawn2Cap = eP.Pawns[pawn2CapIndex].GetComponent<Pawn>();
+			
+			if (fieldIDinLine != "brak_pola" && enemyPawn2Cap.pState != PawnState.CAPTURED) {
+				Field fieldScript = GameObject.Find(fieldIDinLine).GetComponent<Field>(); 
+				// sprawdzamy czy to pole jest puste 
+				if (fieldScript.fState == FieldState.EMPTY || fieldScript.fState == FieldState.MOVE_ALLOWED){
+					isCapture = true;
+				}
+			}
+		}
+		
+		return isCapture;
 	}
 }

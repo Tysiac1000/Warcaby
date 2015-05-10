@@ -58,7 +58,16 @@ public class Field : MonoBehaviour {
 					Gameplay gS = Camera.main.GetComponent<Gameplay>();
 					Board bS = rFieldHit.transform.parent.transform.gameObject.GetComponent<Board>();
 					if(gS.isThereCapture) {
-						// mechanizm ruchu w momencie bicia
+						// Player wykona ruch bijąc pionka
+						// Szukamy obiektu playera
+						Player playerS = GameObject.Find("Player"+gS.whoseTurnID).GetComponent<Player>();
+						// Wykonujemy bicie
+						playerS.makeCapture(HitedFieldScript.idField, playerS.pawnToCapture);
+						// po tym trzeba sprawdzić czy są bicia dalej
+						// jeśli JO to ustawiamy odpowiednie flagi dla pionka i pól
+						// jeśli NE to kończymy turę
+						Pawn p2m = playerS.Pawns[playerS.pawnToMove].GetComponent<Pawn>();
+						if(!bS.areThereCaptures(p2m)) playerS.changeTurn(p2m);
 					}
 					else if (gS.isThereMove) {
 						// jeśli nie ma bić, to wykonjemy prosty ruch na inne pole

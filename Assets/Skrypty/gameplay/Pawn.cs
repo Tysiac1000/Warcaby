@@ -49,18 +49,20 @@ public class Pawn : MonoBehaviour {
 			// sprawdzamy czy trafiliśmy na obiekt z tagiem Pawn
 			if(didHit && rhPawnHit.collider.gameObject.tag == "Pawn") {
 
-				// sprawdzamy czy to pionek gracza, który ma ruch
+				// sprawdzamy czy to pionek gracza, który ma ruch i który nie został zbity
 				int whoseTurn = Camera.main.GetComponent<Gameplay>().whoseTurnID;
-				if(rhPawnHit.collider.gameObject.transform.parent.gameObject.GetComponent<Player>().playerID == whoseTurn)
+				if(rhPawnHit.collider.gameObject.transform.parent.gameObject.GetComponent<Player>().playerID == whoseTurn && rhPawnHit.collider.gameObject.GetComponent<Pawn>().pState != PawnState.CAPTURED)
 				{
 					Pawn cPawn = rhPawnHit.transform.GetComponent<Pawn>();
 					Gameplay gp = Camera.main.GetComponent<Gameplay>();
 					Board bS = GameObject.Find ("Board").GetComponent<Board>();
+					Player cP = GameObject.Find("Player"+whoseTurn).GetComponent<Player>();
+
 
 					// sprawdzamy czy są bicia 
 					if (gp.isThereCapture){
 						// jeśli tak to może zostać podświetlony tylko pionek z biciem
-						if (cPawn.pState == PawnState.CAN_CAPTURE){
+						if (cPawn.pState == PawnState.CAN_CAPTURE && cPawn.pState != PawnState.CAPTURED){
 							highlightPawn(rhPawnHit);
 							/*  w momencie tapnięcia na pionek który ma możliwość bicia, zostaną
 							 *  podświetlone pola na które możemy wskoczyć bijąc wroga,
@@ -73,29 +75,13 @@ public class Pawn : MonoBehaviour {
 								if (dField.GetComponent<Field>().fState == FieldState.HIGHLIGHTED) dField.GetComponent<Field>().unsetHighlighted();
 							}
 
-							// odczytujemy id pól znajdujących się w sąsiedztwie pionka, na których stoi wróg
-							List<string> SurrFieldsWithEnemies = bS.getSurroundingFieldsWithEnemies(cPawn.fieldID, (int)(cPawn.pawnID/100) );
-
-							// sprawdzamy czy pola za pionkiem wroga w lini prostej są wolne
-							foreach (string sfields in SurrFieldsWithEnemies){
-								// najpierw szukamy id pola za pionkiem wroga
-								string fieldIDinLine = bS.getFieldIDinLine(cPawn.fieldID, sfields);
-								if (fieldIDinLine != "brak_pola") {
-									Field fieldScript = GameObject.Find(fieldIDinLine).GetComponent<Field>(); 
-									// sprawdzamy czy to pole jest puste 
-									if (fieldScript.fState == FieldState.EMPTY || fieldScript.fState == FieldState.MOVE_ALLOWED){
-										// jeśli tak to podświetlamy
-										fieldScript.setHighlighted();
-										// zapamiętujemy id pionka ktory wykonuje bicie
-										GameObject.Find("Player"+whoseTurn).GetComponent<Player>().pawnToMove = (cPawn.pawnID-(whoseTurn*100)-1);
-									}
-								}
-							}
+							// szukamy bić
+							bS.searchForCaptures(cPawn);
 
 						}
 					} else if (gp.isThereMove){
 						// jeśli nie to moze zostać podświetlony pionek z ruchem
-						if (cPawn.pState == PawnState.CAN_MOVE){
+						if (cPawn.pState == PawnState.CAN_MOVE && cPawn.pState != PawnState.CAPTURED){
 							highlightPawn(rhPawnHit);
 							/*  w tym momencie należy podświetlić pola na które chcemy ruszyć
 							 *  ale przed tym należy "odświetlić" inne wcześniej podświetlone pola
@@ -130,14 +116,25 @@ public class Pawn : MonoBehaviour {
 
 	// funkcja podświetla pionka
 	private void highlightPawn(RaycastHit rhPawnHit) {
-		if(this.gameObject.transform.parent.gameObject.name == "Player1") {
-			this.gameObject.renderer.material = blackPawn;
-		} else this.gameObject.renderer.material = whitePawn;
+		if (this.gameObject.GetComponent<Pawn> ().pState != PawnState.CAPTURED) {
+						if (this.gameObject.transform.parent.gameObject.name == "Player1") {
+								this.gameObject.renderer.material = blackPawn;
+						} else
+								this.gameObject.renderer.material = whitePawn;
+				}
 
 		rhPawnHit.collider.gameObject.renderer.material = selectedPawnMat;
 		
 		isSelected = false;
 		rhPawnHit.collider.gameObject.GetComponent<Pawn>().isSelected = true;
+	}
+
+	//funkcja odswietlająca pionka 
+	public void unHighlightPawn(GameObject pawn){
+		if(pawn.gameObject.transform.parent.gameObject.name == "Player1") {
+			pawn.collider.gameObject.renderer.material = blackPawn;
+		} else pawn.collider.gameObject.renderer.material = whitePawn;
+
 	}
 
 	// funkcja rusza pionka
@@ -148,7 +145,7 @@ public class Pawn : MonoBehaviour {
 		this.gameObject.transform.localPosition = dest;
 	}
 	
-	public void destroy() {
-		
+	public void putOut() {
+		this.gameObject.transform.position = new Vector3 ((float)2.5,this.gameObject.transform.localPosition.y,this.gameObject.transform.localPosition.z);
 	}
 }
