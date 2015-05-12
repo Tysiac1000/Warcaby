@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Klasa Planszy
+/// </summary>
 public class Board : MonoBehaviour {
 
 	public GameObject Field_bright;
@@ -18,19 +21,28 @@ public class Board : MonoBehaviour {
 	void Update () {
 		
 	}
-
 	public void setFieldState(FieldState fStat, string idField) {
-		// ustawiamy stan dla pola podany w argumencie
+		/// <summary>
+		/// ustawiamy stan dla pola podany w argumencie
+		/// </summary>
 		GameObject.Find (idField).GetComponent<Field> ().fState = fStat;
 	}
 
 	public Vector3 getFieldCenterCoordinate(string idField){
-		// szukamy pola o podanym numerze id 
+
+		/// <summary>
+		/// szukamy pola o podanym numerze id 
+		/// </summary>
 		GameObject field = GameBoard.transform.FindChild (idField).gameObject;
-		// zwracamy pozycję pola jako Vector3
+
+		/// <summary>
+		/// zwracamy pozycję pola jako Vector3
+		/// </summary>
 		return new Vector3 (field.transform.position.x,(float)0.38,field.transform.position.z);
 	}
-//	funkcja generująca pola dla planszy
+	/// <summary>
+	///	funkcja generująca pola dla planszy
+	/// </summary>
 	void fillBoardWithFields() {
 		Fields = new GameObject[fc][];
 		for (int a = 0; a < 8; a++) 
@@ -38,7 +50,9 @@ public class Board : MonoBehaviour {
 			Fields[a] = new GameObject[fc];
 			for (int b = 0; b < 8; b++) 
 			{
-				// Tworzymy nowe pola na zmianę, raz ciemne raz jasne z przesunięciem co drugi rząd
+				/// <summary>
+				/// Tworzymy nowe pola na zmianę, raz ciemne raz jasne z przesunięciem co drugi rząd
+				/// </summary>
 				if ((a % 2) == 1)
 				{
 					if ((b % 2) == 1) { 
@@ -59,7 +73,9 @@ public class Board : MonoBehaviour {
 				Fields[a][b].transform.localScale = new Vector3((float)3.77,(float)3.77,1);
 				Fields[a][b].transform.position = new Vector3((float)(1.32-(a * 0.38)),(float)0.22,(float)(-1.339+(b * 0.38)));
 				Fields[a][b].AddComponent<Field>();
-				// przypisujemy nazwy do obiektów
+				/// <summary>
+				/// przypisujemy nazwy do obiektów
+				/// </summary>
 				switch (a){
 					case 0 :Fields[a][b].name = "A" + (b+1).ToString(); break;
 					case 1 :Fields[a][b].name = "B" + (b+1).ToString(); break;
@@ -71,11 +87,15 @@ public class Board : MonoBehaviour {
 					case 7 :Fields[a][b].name = "H" + (b+1).ToString(); break;
 				}
 				Fields[a][b].GetComponent<Field>().idField = Fields[a][b].name;
-				
-				// Nowo utworzone pole trzeba ustawić jako dziecko obiektu Board
+
+				/// <summary>
+				/// Nowo utworzone pole trzeba ustawić jako dziecko obiektu Board
+				/// </summary>
 				Fields[a][b].transform.parent = GameBoard.gameObject.transform;
 			
-				// dodajemy tag
+				/// <summary>
+				/// dodajemy tag
+				/// </summary>
 				Fields[a][b].tag = "Field";
 			}
 		}

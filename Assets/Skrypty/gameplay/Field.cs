@@ -1,13 +1,17 @@
 using UnityEngine;
 using System.Collections;
 
-// typ wyliczeniowy określający stan pola: puste, nie puste, dozwolony ruch
+/// <summary>
+/// Typ wyliczeniowy określający stan pola: puste, nie puste, dozwolony ruch
+/// </summary>
 public enum FieldState{
 	EMPTY = 0,
 	NON_EMPTY,
 	MOVE_ALLOWED
 }
-
+/// <summary>
+/// Klasa Pola Gry
+/// </summary>
 public class Field : MonoBehaviour {
 
 	public string idField;
@@ -24,7 +28,9 @@ public class Field : MonoBehaviour {
 		OnFieldClick ();
 	}
 
-	// reakcja na kliknięcie pola w grze
+	/// <summary>
+	/// reakcja na kliknięcie pola w grze
+	/// </summary>
 	private void OnFieldClick() {
 		if (Input.GetMouseButtonDown (0)) {
 			Ray toMouse = Camera.main.ScreenPointToRay(Input.mousePosition);

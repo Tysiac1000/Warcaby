@@ -45,10 +45,10 @@ public class Pawn : MonoBehaviour {
 				if(rhPawnHit.collider.gameObject.transform.parent.gameObject.GetComponent<Player>().playerID == Camera.main.GetComponent<Gameplay>().whoseTurnID)
 				{
 					if(this.gameObject.transform.parent.gameObject.name == "Player1") {
-						this.gameObject.renderer.material = blackPawn;
-					} else this.gameObject.renderer.material = whitePawn;
+						this.gameObject.GetComponent<Renderer>().material = blackPawn;
+					} else this.gameObject.GetComponent<Renderer>().material = whitePawn;
 					
-					rhPawnHit.collider.gameObject.renderer.material = selectedPawnMat;
+					rhPawnHit.collider.gameObject.GetComponent<Renderer>().material = selectedPawnMat;
 
 					isSelected = false;
 					rhPawnHit.collider.gameObject.GetComponent<Pawn>().isSelected = true;

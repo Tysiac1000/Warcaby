@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-
+/// <summary>
+/// Klasa Gameplay
+/// </summary>
 public class Gameplay : MonoBehaviour {
-
-	// elementy funkcjonalne
+	/// <summary>
+	/// elementy funkcjonalne
+	/// </summary>
 	private string winner;
 	public int whoseTurnID;
-	// elementy GUI
-	// panele
+	/// <summary>
+	/// elementy GUI - Panele
+	/// </summary>
 	public GameObject panelGameEnd;
 	public GameObject panelGrab;
 	public Text textWinner;
@@ -16,7 +20,9 @@ public class Gameplay : MonoBehaviour {
 	private GameObject player1,player2;
 
 	// Use this for initialization
-	// rozpoczęcie gry
+	/// <summary>
+	/// rozpoczęcie gry
+	/// </summary>
 	void Start () {
 		createPlayer ("Player1", player1, 1);
 		createPlayer ("Player2", player2, 2);
@@ -43,7 +49,9 @@ public class Gameplay : MonoBehaviour {
 	void Update () {
 	
 	}
-	// tworzenie nowego gracza
+	/// <summary>
+	/// tworzenie nowego gracza
+	/// </summary>
 	public void createPlayer(string playerName, GameObject player, int ID)
 	{
 		player = new GameObject ();
@@ -51,14 +59,20 @@ public class Gameplay : MonoBehaviour {
 		player.name = playerName;
 		player.GetComponent<Player> ().playerID = ID;
 	}
-	// pokaż wynik gry
+	/// <summary>
+	/// pokaż wynik gry
+	/// </summary>
 	public void showResults(string Winner){
 		textWinner.text = Winner;
 		panelGameEnd.SetActive (true);
 	}
-	// powrót do menu
+	/// <summary>
+	/// powrót do menu
+	/// </summary>
 	public void backToMainMenu(){
-		// Sprawdzamy platformę i zamykamy program
+		/// <summary>
+		/// Sprawdzamy platformę i zamykamy program
+		/// </summary>
 		Application.LoadLevel ("menu");
 	}
 }
