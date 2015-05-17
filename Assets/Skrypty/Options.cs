@@ -30,8 +30,6 @@ public class Options : MonoBehaviour {
 	public GameObject Music;
 	public GameObject Sounds;
 	// opcje grafiki
-	public bool shadows;
-	private bool shadowsDefault;
 	public int graphicsQuality;
 	private int graphicsQualityDefault;
 	public int boardStyle;
@@ -43,7 +41,6 @@ public class Options : MonoBehaviour {
 		musicVolumeDefault = musicVolume = 1;
 		soundsVolumeDefault = soundsVolume = 1;
 		// inicjalizujemy ustawienia grafiki
-		shadowsDefault = shadows = true;
 		graphicsQualityDefault = graphicsQuality = 3;
 	}
 
@@ -56,8 +53,6 @@ public class Options : MonoBehaviour {
 		GameObject.Find("sliderMusic").GetComponent<Slider>().value = musicVolumeDefault;
 		soundsVolume = soundsVolumeDefault;
 		GameObject.Find("sliderSounds").GetComponent<Slider>().value = soundsVolumeDefault;
-		shadows = shadowsDefault;
-		GameObject.Find("toggleShadows").GetComponent<Toggle>().isOn = shadowsDefault;
 		graphicsQuality = graphicsQualityDefault;
 		GameObject.Find("sliderGraphics").GetComponent<Slider>().value = graphicsQualityDefault;
 	}
@@ -108,13 +103,7 @@ public class Options : MonoBehaviour {
 	public int getGraphicsQuality() {
 		return graphicsQuality;
 	}
-	public void setShadows(bool s) {
-		shadows = s;
 
-	}
-	public bool getShadows() {
-		return shadows;
-	}
 	#endregion
 
 
