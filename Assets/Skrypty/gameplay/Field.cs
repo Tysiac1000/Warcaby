@@ -42,7 +42,7 @@ public class Field : MonoBehaviour {
 		// sprawdzamy czy tapnięto ekran
 		// warunek dla androida: Input.touchCount > 0
 		// warunek dla Windowsa: 
-		if (Input.GetMouseButton (0)) {
+		if (Input.touchCount > 0) {
 			Ray toMouse = Camera.main.ScreenPointToRay(Input.mousePosition);
 			RaycastHit rFieldHit;
 			bool didHit = Physics.Raycast(toMouse, out rFieldHit, 500.0f);

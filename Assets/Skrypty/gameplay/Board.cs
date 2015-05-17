@@ -27,7 +27,7 @@ public class Board : MonoBehaviour {
 	}
 
 	// zwraca listę ciemnych pól
-	public List<GameObject> set() {
+	public List<GameObject> getDarkFieldsList() {
 		List<GameObject> fieldsList = new List<GameObject>();
 		for (int a = 0; a < 8; a++) {
 						for (int b = 0; b < 8; b++) {

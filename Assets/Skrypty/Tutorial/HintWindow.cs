@@ -1,9 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-/// <summary>
-/// Klasa HintWindow
-/// </summary>
 public class HintWindow : MonoBehaviour {
 	
 	// Use this for initialization

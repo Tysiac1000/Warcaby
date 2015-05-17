@@ -6,15 +6,15 @@ using System.Collections.Generic;
 public class Gameplay : MonoBehaviour {
 
 	// elementy funkcjonalne
-	private string winner;
 	public int whoseTurnID;
 	public bool isThereCapture;
 	public bool isThereMove;
 
 	// elementy GUI
 	public GameObject panelGameEnd;
+	public GameObject panelGameStart;
 	public Text textWinner;
-	public Text whoseTurnText;
+	public Image wPawnS,bPawnS;
 
 	public GameObject Field_bright;
 	public GameObject Field_dark;
@@ -105,7 +105,13 @@ public class Gameplay : MonoBehaviour {
 	// aby sprawdzić czy są ruchy i bicia dla danego gracza
 	public void onTurnStart(int pID){
 
-		whoseTurnText.GetComponent<Text>().text = "Player " + pID;
+		if (pID == 1) {
+			wPawnS.enabled = false;
+			bPawnS.enabled = true;
+		} else {
+			wPawnS.enabled = true;
+			bPawnS.enabled = false;
+		}
 
 		// ustawiamy wartość określającą czy jest jakieś bicie na fałsz
 		isThereCapture = false;
@@ -193,7 +199,7 @@ public class Gameplay : MonoBehaviour {
 		// sprawdzamy czy są jakieś ruchy lub bicia
 		if (!isThereCapture && !isThereMove) {
 			// jeśli nie ma możliwych ruchów lub bić to koniec gry i remis
-			showResults("Remis");
+			showResults(whoseTurnID+"");
 		}
 		Debug.Log ("Zainicjalizowano turę dla gracza nr: " + whoseTurnID);
 	}
@@ -213,10 +219,11 @@ public class Gameplay : MonoBehaviour {
 		if (Winner == "Remis") {
 			// wyświetlenie remisu		
 			panelGameEnd.SetActive (true);
+			textWinner.text = "Wynik gry: REMIS";
 		} else {
 			// wyświetlenie informacji o tym który gracz wygrał
-			textWinner.text = Winner;
 			panelGameEnd.SetActive (true);
+			textWinner.text = "Wygrał: Gracz "+whoseTurnID;
 		}
 	}
 

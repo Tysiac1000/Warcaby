@@ -1,8 +1,6 @@
 using UnityEngine;
 using System.Collections;
-/// <summary>
-/// Klasa samouczka 
-/// </summary>
+
 public class Tutorial : MonoBehaviour {
 
 	// Use this for initialization
@@ -15,9 +13,6 @@ public class Tutorial : MonoBehaviour {
 		
 	}
 
-	/// <summary>
-	///  Funkcja powrotu do Menu Głównego
-	/// </summary>
 	public void BackToMenu () 
 	{
 		Application.LoadLevel("Menu");

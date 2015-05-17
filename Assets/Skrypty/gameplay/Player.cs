@@ -151,7 +151,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void changeTurn(Pawn pawn2Move){
-		// zmiana tury
+
 		pawnToMove = 0;
 		
 		// trzeba jeszcze odznaczyć pionka po wykonanym ruchu
