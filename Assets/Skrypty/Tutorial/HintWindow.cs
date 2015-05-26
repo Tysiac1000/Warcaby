@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-
 /// <summary>
 /// Klasa HintWindow
 /// </summary>

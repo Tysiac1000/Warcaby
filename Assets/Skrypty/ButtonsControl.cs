@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class ButtonsControl : Menu{
 	/// <param name="click">Dzwięku "clicku" n</param>
 	public AudioClip click;
-
+	
 	// Use this for initialization
 	void Start () {
 	}
@@ -15,7 +15,7 @@ public class ButtonsControl : Menu{
 	// Update is called once per frame
 	void Update () {
 	}
-
+	
 	/// <summary>
 	/// Odtwarzanie dzwięku 
 	/// </summary>

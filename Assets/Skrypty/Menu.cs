@@ -17,11 +17,12 @@ public class Menu : MonoBehaviour {
 	public ToggleGroup toggleColorGroup;
 	
 	/// <summary>
-	/// Use this for initialization
 	///  Uzyskujemy uchwyt do panel info
 	/// </summary>
 	void Start () {
-		// szukamy obiektu gry 
+		/// <summary>
+		/// Szukamy obiektu gry 
+		/// </summary>
 		panelInfo = GameObject.Find("panelInfo");
 	}
 
